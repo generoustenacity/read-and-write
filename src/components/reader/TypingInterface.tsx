@@ -23,8 +23,52 @@ const TypingInterface: React.FC<TypingInterfaceProps> = ({
   onComplete,
   onUpdateHighlights,
   audioEnabled,
-  audioType
+  audioType,
+  onToggleSidebar
 }) => {
+  const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0 });
+  const [selectedText, setSelectedText] = useState('');
+  
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key.toLowerCase() === 'h' && window.getSelection()?.toString()) {
+        e.preventDefault();
+        handleHighlightSelection();
+      }
+    };
+    
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const selection = window.getSelection()?.toString();
+    if (selection) {
+      setSelectedText(selection);
+      setContextMenu({ visible: true, x: e.clientX, y: e.clientY });
+    }
+  };
+
+  const handleHighlightSelection = () => {
+    const selection = selectedText || window.getSelection()?.toString();
+    if (selection) {
+      const highlight = {
+        id: Date.now().toString(),
+        text: selection,
+        position: typingState.currentPosition,
+        dateCreated: new Date().toISOString()
+      };
+      typingState.highlights.push(highlight);
+      onUpdateHighlights(typingState.highlights);
+    }
+    setContextMenu({ visible: false, x: 0, y: 0 });
+  };
+
+  const handleCopyText = () => {
+    navigator.clipboard.writeText(selectedText);
+    setContextMenu({ visible: false, x: 0, y: 0 });
+  };
   const { typingState, metrics, addHighlight, resetTest } = useTypingTest({
     content: article.content,
     onComplete,
@@ -123,8 +167,30 @@ const TypingInterface: React.FC<TypingInterfaceProps> = ({
       
       <ProgressMetrics metrics={metrics} />
       
-      <div className="mt-6 bg-gray-50 dark:bg-gray-800 p-4 rounded-md overflow-y-auto max-h-[60vh] transition-colors duration-300">
+      <div 
+        className="mt-6 bg-gray-50 dark:bg-gray-800 p-4 rounded-md overflow-y-auto max-h-[60vh] transition-colors duration-300"
+        onContextMenu={handleContextMenu}
+      >
         {renderText()}
+        {contextMenu.visible && (
+          <div
+            className="fixed bg-white dark:bg-gray-800 shadow-lg rounded-md py-1 z-50"
+            style={{ top: contextMenu.y, left: contextMenu.x }}
+          >
+            <button
+              className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700"
+              onClick={handleCopyText}
+            >
+              Copy
+            </button>
+            <button
+              className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700"
+              onClick={handleHighlightSelection}
+            >
+              Highlight
+            </button>
+          </div>
+        )}
       </div>
       
       <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">

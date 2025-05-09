@@ -10,6 +10,7 @@ const Reader: React.FC = () => {
   const { articles, currentArticleId, updateArticle, audioSettings } = useContent();
   const navigate = useNavigate();
   const [isComplete, setIsComplete] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   // Find the current article
   const currentArticle = articles.find(article => article.id === currentArticleId);
@@ -70,13 +71,19 @@ const Reader: React.FC = () => {
   
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-4 flex items-center">
+      <div className="mb-4 flex items-center justify-between">
         <Button
           variant="ghost"
           leftIcon={<ArrowLeft size={16} />}
           onClick={() => navigate('/')}
         >
           Back
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        >
+          Highlights
         </Button>
         
         {isComplete && (
@@ -103,13 +110,12 @@ const Reader: React.FC = () => {
         audioType={audioSettings.soundType}
       />
       
-      <div className="mt-6">
-        <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">Your Highlights</h3>
-        <HighlightManager
-          highlights={currentArticle.highlights}
-          onDeleteHighlight={handleDeleteHighlight}
-        />
-      </div>
+      <HighlightSidebar
+        highlights={currentArticle.highlights}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        onDeleteHighlight={handleDeleteHighlight}
+      />
     </div>
   );
 };
