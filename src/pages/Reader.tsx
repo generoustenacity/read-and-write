@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TypingInterface from '../components/reader/TypingInterface';
+import { HighlightSidebar } from '../components/reader/HighlightSidebar';
 import HighlightManager from '../components/reader/HighlightManager';
 import { useContent } from '../context/ContentContext';
 import Button from '../components/ui/Button';

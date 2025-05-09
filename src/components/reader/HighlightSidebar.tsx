@@ -7,7 +7,7 @@ interface HighlightSidebarProps {
   onClose: () => void;
 }
 
-const HighlightSidebar: React.FC<HighlightSidebarProps> = ({ highlights, isOpen, onClose }) => {
+export const HighlightSidebar: React.FC<HighlightSidebarProps> = ({ highlights, isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
