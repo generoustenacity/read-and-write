@@ -49,7 +49,7 @@ export default {
         slideIn: 'slideIn 0.3s ease-out',
       },
       fontFamily: {
-        serif: ['Spectral', 'serif'],
+        sans: ['Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
       },
       keyframes: {
         blink: {

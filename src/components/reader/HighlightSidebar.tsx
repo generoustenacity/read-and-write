@@ -1,62 +1,44 @@
-
 import React from 'react';
-import { X } from 'lucide-react';
 import { Highlight } from '../../types';
 
 interface HighlightSidebarProps {
   highlights: Highlight[];
   isOpen: boolean;
   onClose: () => void;
-  onDeleteHighlight: (id: string) => void;
 }
 
-const HighlightSidebar: React.FC<HighlightSidebarProps> = ({
-  highlights,
-  isOpen,
-  onClose,
-  onDeleteHighlight
-}) => {
+const HighlightSidebar: React.FC<HighlightSidebarProps> = ({ highlights, isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed right-0 top-0 h-full w-80 bg-white dark:bg-gray-900 shadow-lg transform transition-transform duration-300 z-40">
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-primary-900 dark:text-cream-100">Highlights</h3>
+    <div className="fixed right-0 top-0 h-full w-80 bg-cream-50 dark:bg-primary-900 shadow-lg p-4 overflow-y-auto transition-transform transform">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-medium">Highlights</h3>
         <button
           onClick={onClose}
-          className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          className="text-primary-600 dark:text-cream-300 hover:text-primary-800 dark:hover:text-cream-100"
         >
-          <X size={20} />
+          ✕
         </button>
       </div>
-      
-      <div className="p-4 space-y-4 overflow-y-auto h-[calc(100vh-64px)]">
-        {highlights.length === 0 ? (
-          <p className="text-gray-500 dark:text-gray-400 italic text-center">
-            No highlights yet
-          </p>
-        ) : (
-          highlights.map(highlight => (
+
+      {highlights.length === 0 ? (
+        <p className="text-primary-600 dark:text-cream-300">No highlights yet</p>
+      ) : (
+        <div className="space-y-4">
+          {highlights.map((highlight) => (
             <div
               key={highlight.id}
-              className="bg-cream-50 dark:bg-primary-800 p-4 rounded-lg"
+              className="p-3 bg-cream-100 dark:bg-primary-800 rounded-md"
             >
-              <p className="text-primary-900 dark:text-cream-100 mb-2">"{highlight.text}"</p>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-500 dark:text-gray-400">
-                  {new Date(highlight.dateCreated).toLocaleString()}
-                </span>
-                <button
-                  onClick={() => onDeleteHighlight(highlight.id)}
-                  className="text-red-500 hover:text-red-700 dark:text-red-400"
-                >
-                  Delete
-                </button>
-              </div>
+              <p className="text-primary-800 dark:text-cream-100">{highlight.text}</p>
+              <p className="text-sm text-primary-500 dark:text-cream-300 mt-2">
+                {new Date(highlight.dateCreated).toLocaleDateString()}
+              </p>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
