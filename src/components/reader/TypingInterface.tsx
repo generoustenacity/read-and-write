@@ -28,7 +28,7 @@ const TypingInterface: React.FC<TypingInterfaceProps> = ({
 }) => {
   const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0 });
   const [selectedText, setSelectedText] = useState('');
-  
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key.toLowerCase() === 'h' && window.getSelection()?.toString()) {
@@ -36,7 +36,7 @@ const TypingInterface: React.FC<TypingInterfaceProps> = ({
         handleHighlightSelection();
       }
     };
-    
+
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
@@ -75,43 +75,56 @@ const TypingInterface: React.FC<TypingInterfaceProps> = ({
     audioEnabled,
     soundType: audioType
   });
-  
+
   // Save highlights when they change
   useEffect(() => {
     if (typingState.highlights.length > 0) {
       onUpdateHighlights(typingState.highlights);
     }
   }, [typingState.highlights, onUpdateHighlights]);
-  
+
   // Prepare text display with proper formatting
   const renderText = () => {
     const content = article.content;
     const currentPosition = typingState.currentPosition;
     const mistakes = typingState.mistakes;
-    
+
     // Text the user has already typed
     const typedText = content.substring(0, currentPosition);
-    
+
     // Text yet to be typed
     const remainingText = content.substring(currentPosition);
-    
+
     return (
       <div id="typing-content" className="relative font-mono text-lg leading-relaxed">
         {/* Text already typed */}
         <span className="text-gray-900 dark:text-gray-100">
-          {typedText.split('').map((char, index) => (
-            <span 
-              key={index}
-              className={`${mistakes.includes(index) ? 'text-red-500 dark:text-red-400' : ''}`}
-            >
-              {char}
-            </span>
-          ))}
+          {typedText.split('').map((char, index) => {
+            const isHighlighted = article.highlights.some(h => 
+              index >= h.position && index < h.position + h.text.length
+            );
+            return (
+              <span 
+                key={index}
+                className={`${
+                  mistakes.includes(index) 
+                    ? 'text-red-500 dark:text-red-400' 
+                    : ''
+                } ${
+                  isHighlighted 
+                    ? 'bg-yellow-100 dark:bg-yellow-900/30' 
+                    : ''
+                }`}
+              >
+                {char}
+              </span>
+            );
+          })}
         </span>
-        
+
         {/* Cursor */}
         <span className={`inline-block w-0.5 h-5 bg-blue-500 dark:bg-blue-400 animate-blink mx-0.5 ${typingState.isPaused ? 'opacity-50' : ''}`}></span>
-        
+
         {/* Text yet to be typed */}
         <span className="text-gray-400 dark:text-gray-500">
           {remainingText}
@@ -119,12 +132,12 @@ const TypingInterface: React.FC<TypingInterfaceProps> = ({
       </div>
     );
   };
-  
+
   return (
     <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg p-6 transition-colors duration-300">
       <div className="mb-4 flex justify-between items-center">
         <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">{article.title}</h2>
-        
+
         <div className="flex space-x-2">
           <Button
             variant="outline"
@@ -134,7 +147,7 @@ const TypingInterface: React.FC<TypingInterfaceProps> = ({
           >
             Highlight
           </Button>
-          
+
           {typingState.isPaused ? (
             <Button
               variant="outline"
@@ -164,9 +177,9 @@ const TypingInterface: React.FC<TypingInterfaceProps> = ({
           )}
         </div>
       </div>
-      
+
       <ProgressMetrics metrics={metrics} />
-      
+
       <div 
         className="mt-6 bg-gray-50 dark:bg-gray-800 p-4 rounded-md overflow-y-auto max-h-[60vh] transition-colors duration-300"
         onContextMenu={handleContextMenu}
@@ -192,7 +205,7 @@ const TypingInterface: React.FC<TypingInterfaceProps> = ({
           </div>
         )}
       </div>
-      
+
       <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
         <p>Type the text above to read it. Press <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">Alt</kbd> to pause/resume.</p>
         <p>Select text and click "Highlight" to save important passages.</p>
