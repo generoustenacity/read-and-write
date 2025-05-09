@@ -180,8 +180,7 @@ const TypingInterface: React.FC<TypingInterfaceProps> = ({
 
       <ProgressMetrics metrics={metrics} />
 
-      <div 
-        className="mt-6 bg-gray-50 dark:bg-gray-800 p-4 rounded-md overflow-y-auto max-h-[60vh] transition-colors duration-300"
+      <div className="mt-6 bg-gray-50 dark:bg-gray-900 p-6 rounded-lg overflow-y-auto max-h-[60vh] transition-colors duration-300 border border-gray-100 dark:border-gray-800"
         onContextMenu={handleContextMenu}
       >
         {renderText()}
